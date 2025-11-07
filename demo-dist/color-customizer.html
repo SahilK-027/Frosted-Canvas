@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frosted Canvas - Color Customizer</title>
+      <link rel="icon" type="image/svg+xml" href="/fc.png" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    #bg {
+      width: 100%;
+      height: 100vh;
+      position: fixed;
+      inset: 0;
+    }
+
+    .controls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      background: rgba(10, 10, 20, 0.7);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      max-width: 360px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .controls::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .controls::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
+
+    .controls::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+
+    .controls::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .controls h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #fff;
+      font-weight: 700;
+      text-align: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      transition: all 0.3s;
+    }
+
+    .control-group:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-group h3 {
+      font-size: 13px;
+      margin-bottom: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 11px;
+    }
+
+    .color-input {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .color-input label {
+      font-size: 12px;
+      min-width: 60px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .color-input input[type="color"] {
+      width: 50px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      cursor: pointer;
+      background: transparent;
+      transition: all 0.2s;
+    }
+
+    .color-input input[type="color"]:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+    }
+
+    .color-input input[type="text"] {
+      flex: 1;
+      padding: 8px 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 12px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      transition: all 0.2s;
+    }
+
+    .color-input input[type="text"]:focus {
+      outline: none;
+      border-color: rgba(129, 140, 248, 0.5);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .slider-input {
+      margin-bottom: 12px;
+    }
+
+    .slider-input label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 6px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .slider-input input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .slider-input input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #818cf8, #a5b4fc);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(129, 140, 248, 0.4);
+      transition: all 0.2s;
+    }
+
+    .slider-input input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 4px 12px rgba(129, 140, 248, 0.6);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 8px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    button.primary {
+      background: rgba(129, 140, 248, 0.3);
+      border-color: rgba(129, 140, 248, 0.5);
+      box-shadow: 0 4px 16px rgba(129, 140, 248, 0.2);
+    }
+
+    button.primary:hover {
+      background: rgba(129, 140, 248, 0.4);
+      border-color: rgba(129, 140, 248, 0.7);
+      box-shadow: 0 6px 24px rgba(129, 140, 248, 0.3);
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .preset-btn {
+      padding: 10px 8px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .code-output {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px;
+      border-radius: 10px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.9);
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 180px;
+      overflow-y: auto;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    .code-output::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .code-output::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    .code-output::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .info {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 100;
+      background: rgba(10, 10, 20, 0.7);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      padding: 20px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      max-width: 320px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .info h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .info p {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .controls {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+      }
+      .info {
+        display: none;
+      }
+    }
+  </style>
+  <script type="module" crossorigin src="/assets/color-customizer-BtHB_jV4.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/presetData-CuvST96S.js">
+  <link rel="modulepreload" crossorigin href="/assets/lib-DOtIyf3h.js">
+</head>
+<body>
+  <div id="bg"></div>
+
+  <div class="info">
+    <h3>🎨 Color Customizer</h3>
+    <p>Create your own unique gradients! Adjust colors and settings in real-time.</p>
+  </div>
+
+  <div class="controls">
+    <h2>🎨 Customize Colors</h2>
+
+    <div class="control-group">
+      <h3>Quick Presets</h3>
+      <div class="preset-grid">
+        <button class="preset-btn" onclick="frost.setPreset(0)">Sunset</button>
+        <button class="preset-btn" onclick="frost.setPreset(1)">Ocean</button>
+        <button class="preset-btn" onclick="frost.setPreset(2)">Forest</button>
+        <button class="preset-btn" onclick="frost.setPreset(3)">Purple</button>
+        <button class="preset-btn" onclick="frost.setPreset(4)">Golden</button>
+        <button class="preset-btn" onclick="frost.setPreset(5)">Arctic</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>Palette A (Offset)</h3>
+      <div class="color-input">
+        <label>Color:</label>
+        <input type="color" id="colorA" value="#e6a6ff">
+        <input type="text" id="hexA" value="#e6a6ff" readonly>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>Palette B (Amplitude)</h3>
+      <div class="color-input">
+        <label>Color:</label>
+        <input type="color" id="colorB" value="#808080">
+        <input type="text" id="hexB" value="#808080" readonly>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>Palette C (Frequency)</h3>
+      <div class="color-input">
+        <label>Color:</label>
+        <input type="color" id="colorC" value="#ffb366">
+        <input type="text" id="hexC" value="#ffb366" readonly>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>Palette D (Phase)</h3>
+      <div class="color-input">
+        <label>Color:</label>
+        <input type="color" id="colorD" value="#002633">
+        <input type="text" id="hexD" value="#002633" readonly>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>Animation & Effects</h3>
+      <div class="slider-input">
+        <label>
+          <span>Animation Speed</span>
+          <span id="speedVal">0.5</span>
+        </label>
+        <input type="range" id="speed" min="0" max="0.5" step="0.01" value="0.5">
+      </div>
+      <div class="slider-input">
+        <label>
+          <span>Noise Scale</span>
+          <span id="scaleVal">0.3</span>
+        </label>
+        <input type="range" id="scale" min="0.1" max="3" step="0.1" value="0.3">
+      </div>
+      <div class="slider-input">
+        <label>
+          <span>Noise Strength</span>
+          <span id="strengthVal">0.35</span>
+        </label>
+        <input type="range" id="strength" min="0" max="1" step="0.05" value="0.35">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>Actions</h3>
+      <div class="button-group">
+        <button class="primary" onclick="randomize()">🎲 Random</button>
+        <button onclick="copyCode()">📋 Copy Code</button>
+        <button onclick="reset()">↺ Reset</button>
+      </div>
+      <div class="code-output" id="codeOutput"></div>
+    </div>
+  </div>
+
+</body>
+</html>
