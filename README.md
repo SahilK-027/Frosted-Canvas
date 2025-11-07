@@ -5,6 +5,36 @@ Beautiful, interactive shader gradients for any div element. Built with Three.js
 [![npm version](https://img.shields.io/npm/v/frosted-canvas.svg)](https://www.npmjs.com/package/frosted-canvas)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+**[📖 Full Documentation](https://frosted-canvas.vercel.app/docs.html)** | **[🎨 Live Demo](https://frosted-canvas.vercel.app/)** | **[🛠️ Color Customizer](https://frosted-canvas.vercel.app/color-customizer.html)**
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+  - [Basic Usage with Preset](#basic-usage-with-preset)
+  - [Custom Colors](#custom-colors)
+  - [Using Hex Colors](#using-hex-colors)
+- [Understanding the Color Palette](#understanding-the-color-palette)
+- [API Reference](#api-reference)
+  - [Constructor](#constructor)
+  - [Methods](#methods)
+- [Presets](#presets)
+- [Framework Integration](#framework-integration)
+  - [React](#react)
+  - [Vue 3](#vue-3)
+  - [Svelte](#svelte)
+  - [Next.js](#nextjs)
+  - [Vanilla JavaScript](#vanilla-javascript)
+- [CDN Usage](#cdn-usage)
+- [Usage Examples](#usage-examples)
+- [Tips & Best Practices](#tips--best-practices)
+- [Resources](#resources)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+- [Credits](#credits)
+
 ## Features
 
 - 44 beautiful preset gradients with smooth animations
@@ -14,6 +44,7 @@ Beautiful, interactive shader gradients for any div element. Built with Three.js
 - Automatic container resizing
 - Lightweight (~98KB) with Three.js as peer dependency
 - CDN support for no-build workflows
+- Fine-grained control over animation and effects
 
 ## Installation
 
@@ -25,92 +56,184 @@ npm install frosted-canvas three
 
 ## Quick Start
 
+### Basic Usage with Preset
+
 ```javascript
 import FrostedCanvas from 'frosted-canvas';
 
-// Initialize with a preset
+// Initialize with a preset gradient
 const frost = new FrostedCanvas('#container', { preset: 0 });
-
-// Or create custom colors
-frost.setColors({
-  paletteA: [0.9, 0.2, 0.5],
-  paletteC: [1.0, 0.8, 0.3]
-});
 ```
 
 ```html
 <div id="container" style="width: 100%; height: 400px;"></div>
 ```
 
-## Documentation
-
-**[View Full Documentation](https://frosted-canvas.vercel.app/docs.html)**
-
-### Configuration
+### Custom Colors
 
 ```javascript
-new FrostedCanvas(container, {
-  preset: 0,           // Preset index (0-43)
-  showGUI: false,      // Show debug controls
-  autoResize: true     // Auto-resize with container
+import FrostedCanvas from 'frosted-canvas';
+
+const frost = new FrostedCanvas('#container');
+
+// Create your own gradient
+frost.setColors({
+  paletteA: [0.9, 0.2, 0.5], // Pink
+  paletteB: [0.5, 0.5, 0.5], // Gray
+  paletteC: [1.0, 0.8, 0.3], // Yellow
+  paletteD: [0.1, 0.3, 0.6], // Blue
 });
 ```
 
-### API Reference
+### Using Hex Colors
 
-#### Methods
+```javascript
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  return [r, g, b];
+}
 
-**setPreset(index)**
+frost.setColors({
+  paletteA: hexToRgb('#FF6B6B'),
+  paletteC: hexToRgb('#4ECDC4'),
+});
+```
+
+## Understanding the Color Palette
+
+The shader uses a cosine-based formula to generate beautiful procedural gradients. Each gradient is controlled by 4 color palettes (A, B, C, D):
+
+**The Formula:**
+
+```
+color(t) = a + b · cos[2π(c·t+d)]
+```
+
+**The Palettes:**
+
+- **Palette A (Offset)**: Base color offset - shifts the entire color range
+- **Palette B (Amplitude)**: Color intensity - controls how vibrant colors are
+- **Palette C (Frequency)**: Color variation - controls how colors transition
+- **Palette D (Phase)**: Color shift - offsets the color wave
+
+Each palette takes RGB values from 0 to 1:
+
+- `[1.0, 0.0, 0.0]` = Red
+- `[0.0, 1.0, 0.0]` = Green
+- `[0.0, 0.0, 1.0]` = Blue
+- `[0.5, 0.5, 0.5]` = Mid Gray
+
+**Learn more:** [YouTube explanation](https://www.youtube.com/shorts/TH3OTy5fTog) | [Full theory](https://iquilezles.org/articles/palettes/)
+
+## API Reference
+
+### Constructor
+
+```javascript
+new FrostedCanvas(container, options);
+```
+
+**Parameters:**
+
+- `container` (string | HTMLElement) - CSS selector or DOM element
+- `options` (object) - Configuration options
+
+**Options:**
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `preset` | number | 0 | Starting preset (0-43) |
+| `showGUI` | boolean | false | Show debug controls |
+| `autoResize` | boolean | true | Auto-resize on container changes |
+
+### Methods
+
+#### `setPreset(index)`
+
+Change to a different preset gradient (0-43).
+
 ```javascript
 frost.setPreset(3);
 ```
 
-**setColors(colors)**
+#### `setColors(colors)`
+
+Set custom RGB colors (values 0-1).
+
 ```javascript
 frost.setColors({
-  paletteA: [0.9, 0.65, 1.0],  // Offset
-  paletteB: [0.5, 0.5, 0.5],   // Amplitude
-  paletteC: [1.0, 0.7, 0.4],   // Frequency
-  paletteD: [0.0, 0.15, 0.2]   // Phase
+  paletteA: [0.9, 0.65, 1.0], // Offset
+  paletteB: [0.5, 0.5, 0.5], // Amplitude
+  paletteC: [1.0, 0.7, 0.4], // Frequency
+  paletteD: [0.0, 0.15, 0.2], // Phase
 });
 ```
 
-**setConfig(config)**
+#### `setConfig(config)`
+
+Adjust animation and effects.
+
 ```javascript
 frost.setConfig({
-  noiseScale: 0.3,
-  noiseStrength: 0.35,
-  animationSpeed: 0.5,
-  grainIntensity: 0.03,
-  vignetteStrength: 3.0
+  noiseScale: 0.3, // 0.1-3.0: Size of noise patterns
+  noiseStrength: 0.35, // 0-1.0: Intensity of distortion
+  animationSpeed: 0.5, // 0-0.5: Speed of animation
+  grainIntensity: 0.03, // 0-0.2: Film grain effect
+  vignetteStrength: 3.0, // 0-3.0: Edge darkening
 });
 ```
 
-**getColors()** / **getConfig()**
+#### `getColors()`
+
+Get current color values.
+
 ```javascript
 const colors = frost.getColors();
-const config = frost.getConfig();
+// Returns: { paletteA: [...], paletteB: [...], paletteC: [...], paletteD: [...] }
 ```
 
-**destroy()**
+#### `getConfig()`
+
+Get current configuration.
+
+```javascript
+const config = frost.getConfig();
+// Returns: { noiseScale: 0.3, noiseStrength: 0.35, ... }
+```
+
+#### `destroy()`
+
+Clean up resources and remove canvas.
+
 ```javascript
 frost.destroy();
 ```
 
-### Presets
+## Presets
 
-44 preset gradients are available (indexed 0-43). Featured presets include:
+44 preset gradients are available (indexed 0-43).
 
-| Index | Name | Description |
-|-------|------|-------------|
-| 0 | Molten Peach | Warm molten peach with lively motion |
-| 3 | Aurora Glow | Northern lights effect |
-| 4 | Deep Ocean | Muted teals and deep blues |
-| 5 | Slate Grain | High-grain monochrome |
-| 14 | Solar Flare | Fiery amber with fast motion |
-| 30 | Cosmic Bloom | Galactic gradients |
+### Featured Presets
 
-[View all 44 presets](https://frosted-canvas.vercel.app/docs.html)
+| Index | Name         | Description                               |
+| ----- | ------------ | ----------------------------------------- |
+| 0     | Molten Peach | Warm molten peach with lively motion      |
+| 1     | Paper Koi    | Gentle paper-like pastels with pond tones |
+| 2     | Sunset Bloom | Warm orange center with soft grain        |
+| 3     | Aurora Glow  | The northern lights                       |
+| 4     | Deep Ocean   | Muted teals and deep blues, calm motion   |
+| 5     | Slate Grain  | High-grain monochrome, cinematic          |
+| 10    | Coral Reef   | Bright coral / teal interplay             |
+| 13    | Forest Mist  | Subtle greens and cool fog                |
+| 14    | Solar Flare  | Fiery amber with fast motion              |
+| 15    | Arctic Dawn  | Pale blues, crisp and calm                |
+| 20    | Candy Cloud  | Playful pinks and blues                   |
+| 30    | Cosmic Bloom | Galactic gradients with soft pulsation    |
+
+### All 44 Presets
+
+Molten Peach, Paper Koi, Sunset Bloom, Aurora Glow, Deep Ocean, Slate Grain, Peach Mirage, Crimson Dusk, Watermelon, Electric Indigo, Coral Reef, Lemon Zest, Midnight Velvet, Forest Mist, Solar Flare, Arctic Dawn, Vintage Sepia, Lavender Haze, Moss Grove, Copper Sunset, Candy Cloud, Meteor Storm, Tropical Night, Dusty Rose, Slate Storm, Glacial Drift, Amber Glow, Neon Canyon, Petrol Dream, Saffron Mist, Cosmic Bloom, Porcelain Dawn, Obsidian Fade, Rose Quartz, Velvet Plum, Horizon Teal, Dusty Denim, Brass Ember, Iris Bloom, Celadon Whisper, Starling Night, Polar Mint, Silent Harbor.
 
 ## Framework Integration
 
@@ -126,7 +249,7 @@ function Hero() {
 
   useEffect(() => {
     frostRef.current = new FrostedCanvas(containerRef.current, {
-      preset: 0
+      preset: 0,
     });
     return () => frostRef.current?.destroy();
   }, []);
@@ -139,7 +262,7 @@ function Hero() {
 }
 ```
 
-### Vue
+### Vue 3
 
 ```vue
 <template>
@@ -158,8 +281,82 @@ let frost = null;
 onMounted(() => {
   frost = new FrostedCanvas(container.value, { preset: 0 });
 });
+
 onUnmounted(() => frost?.destroy());
 </script>
+
+<style scoped>
+.background {
+  width: 100%;
+  height: 100vh;
+}
+</style>
+```
+
+### Svelte
+
+```svelte
+<script>
+  import { onMount, onDestroy } from 'svelte';
+  import FrostedCanvas from 'frosted-canvas';
+
+  let container;
+  let frost;
+
+  onMount(() => {
+    frost = new FrostedCanvas(container, { preset: 0 });
+  });
+
+  onDestroy(() => {
+    if (frost) frost.destroy();
+  });
+</script>
+
+<div bind:this={container} class="background">
+  <h1>Your Content</h1>
+</div>
+
+<style>
+  .background {
+    width: 100%;
+    height: 100vh;
+  }
+</style>
+```
+
+### Next.js
+
+```jsx
+'use client';
+
+import { useEffect, useRef } from 'react';
+import FrostedCanvas from 'frosted-canvas';
+
+export default function Hero() {
+  const containerRef = useRef(null);
+  const frostRef = useRef(null);
+
+  useEffect(() => {
+    if (containerRef.current && !frostRef.current) {
+      frostRef.current = new FrostedCanvas(containerRef.current, {
+        preset: 0,
+      });
+    }
+
+    return () => {
+      if (frostRef.current) {
+        frostRef.current.destroy();
+        frostRef.current = null;
+      }
+    };
+  }, []);
+
+  return (
+    <div ref={containerRef} style={{ width: '100%', height: '100vh' }}>
+      <h1>Next.js + Frosted Canvas</h1>
+    </div>
+  );
+}
 ```
 
 ### Vanilla JavaScript
@@ -178,29 +375,159 @@ onUnmounted(() => frost?.destroy());
 For projects without a build step:
 
 ```html
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.181.0/build/three.module.js",
-    "three/": "https://unpkg.com/three@0.181.0/"
-  }
-}
-</script>
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      #background {
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="background"></div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.181.0/build/three.module.js",
+          "three/": "https://unpkg.com/three@0.181.0/"
+        }
+      }
+    </script>
+
+    <script type="module">
+      import FrostedCanvas from 'https://unpkg.com/frosted-canvas/dist/frosted-canvas.es.js';
+      new FrostedCanvas('#background', { preset: 0 });
+    </script>
+  </body>
+</html>
+```
+
+## Usage Examples
+
+### Full-Screen Hero Background
+
+```html
+<div class="hero" id="hero-bg">
+  <div class="hero-content">
+    <h1>Welcome</h1>
+  </div>
+</div>
 
 <script type="module">
-  import FrostedCanvas from 'https://unpkg.com/frosted-canvas/dist/frosted-canvas.es.js';
-  new FrostedCanvas('#background', { preset: 0 });
+  import FrostedCanvas from 'frosted-canvas';
+  new FrostedCanvas('#hero-bg', { preset: 0 });
 </script>
+```
+
+### Card Background
+
+```html
+<div class="card" id="card-bg">
+  <div class="card-content">
+    <h2>Card Title</h2>
+  </div>
+</div>
+
+<script type="module">
+  import FrostedCanvas from 'frosted-canvas';
+  new FrostedCanvas('#card-bg', { preset: 5 });
+</script>
+```
+
+### Interactive Preset Switcher
+
+```html
+<div id="bg">
+  <button onclick="frost.setPreset(0)">Sunset</button>
+  <button onclick="frost.setPreset(3)">Aurora</button>
+  <button onclick="frost.setPreset(14)">Solar Flare</button>
+</div>
+
+<script type="module">
+  import FrostedCanvas from 'frosted-canvas';
+  window.frost = new FrostedCanvas('#bg', { preset: 0 });
+</script>
+```
+
+### Custom Color Examples
+
+#### Sunset Orange & Pink
+
+```javascript
+frost.setColors({
+  paletteA: [0.9, 0.65, 1.0],
+  paletteB: [0.5, 0.5, 0.5],
+  paletteC: [1.0, 0.7, 0.4],
+  paletteD: [0.0, 0.15, 0.2],
+});
+```
+
+#### Ocean Blue & Teal
+
+```javascript
+frost.setColors({
+  paletteA: [0.5, 0.8, 1.0],
+  paletteB: [0.5, 0.5, 0.5],
+  paletteC: [1.0, 1.0, 0.5],
+  paletteD: [0.0, 0.1, 0.2],
+});
+```
+
+#### Purple & Magenta
+
+```javascript
+frost.setColors({
+  paletteA: [0.8, 0.5, 1.0],
+  paletteB: [0.5, 0.5, 0.5],
+  paletteC: [1.0, 0.5, 0.8],
+  paletteD: [0.3, 0.2, 0.5],
+});
+```
+
+## Tips & Best Practices
+
+### Creating Great Gradients
+
+1. **Start with a preset**: Use `frost.setPreset(0)` then tweak from there
+2. **Keep Palette B moderate**: Values around 0.5 work best for amplitude
+3. **Experiment with Palette C**: This creates the most dramatic changes
+4. **Use complementary colors**: Colors opposite on the color wheel create vibrant gradients
+5. **Test different noise settings**: Lower noiseScale = larger patterns
+6. **Adjust animation speed**: Slower speeds (0.1-0.3) are often more elegant
+
+### Performance
+
+- Container must have explicit width and height
+- Call `destroy()` when removing the component to clean up resources
+- Use `autoResize: true` for responsive containers
+- Multiple instances on the same page are supported
+
+### Saving and Loading Custom Presets
+
+```javascript
+// Save current state
+const myPreset = {
+  colors: frost.getColors(),
+  config: frost.getConfig(),
+};
+localStorage.setItem('myGradient', JSON.stringify(myPreset));
+
+// Load later
+const saved = JSON.parse(localStorage.getItem('myGradient'));
+frost.setColors(saved.colors);
+frost.setConfig(saved.config);
 ```
 
 ## Resources
 
-- [Documentation](https://frosted-canvas.vercel.app/docs.html)
-- [Interactive Demo](https://frosted-canvas.vercel.app/)
-- [Color Customizer](https://frosted-canvas.vercel.app/color-customizer.html)
-- [Quick Reference](./QUICK_REFERENCE.md)
-- [Custom Colors Guide](./CUSTOM_COLORS.md)
-- [Usage Examples](./USAGE_EXAMPLES.md)
+- [Live Demo](https://frosted-canvas.vercel.app/) - See all presets in action
+- [Full Documentation](https://frosted-canvas.vercel.app/docs.html) - Complete documentation
+- [Color Customizer](https://frosted-canvas.vercel.app/color-customizer.html) - Interactive tool to create custom gradients
+- [GitHub Repository](https://github.com/SahilK-027/frosted-canvas) - Source code
+- [npm Package](https://www.npmjs.com/package/frosted-canvas) - npm registry
 
 ## Development
 
@@ -220,7 +547,7 @@ npm run build:demo
 
 ## Contributing
 
-Contributions are welcome. Please open an issue or submit a pull request.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
@@ -228,8 +555,6 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ## Credits
 
-Built with [Three.js](https://threejs.org/) v0.181.0
-
----
-
-Created by [SahilK-027](https://github.com/SahilK-027)
+- Built with [Three.js](https://threejs.org/) v0.181.0
+- Color palette theory by [Íñigo Quílez](https://iquilezles.org/articles/palettes/)
+- Created by [SahilK-027](https://github.com/SahilK-027)
