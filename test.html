@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frosted Canvas - Test</title>
+        <link rel="icon" type="image/svg+xml" href="/fc.png" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #000;
+        color: white;
+      }
+
+      .test-container {
+        width: 100%;
+        height: 100vh;
+        position: relative;
+      }
+
+      .controls {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        padding: 20px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+
+      button {
+        margin: 5px;
+        padding: 10px 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      button:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .info {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        padding: 15px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-container" id="bg">
+      <div class="controls">
+        <h3>Test Controls</h3>
+        <div>
+          <button onclick="frost.setPreset(0)">Preset 0</button>
+          <button onclick="frost.setPreset(1)">Preset 1</button>
+          <button onclick="frost.setPreset(2)">Preset 2</button>
+          <button onclick="frost.setPreset(3)">Preset 3</button>
+          <button onclick="frost.setPreset(4)">Preset 4</button>
+        </div>
+        <div>
+          <button onclick="frost.setPreset(5)">Preset 5</button>
+          <button onclick="frost.setPreset(6)">Preset 6</button>
+          <button onclick="frost.setPreset(7)">Preset 7</button>
+          <button onclick="frost.setPreset(8)">Preset 8</button>
+          <button onclick="frost.setPreset(9)">Preset 9</button>
+        </div>
+        <div style="margin-top: 10px">
+          <button onclick="testDestroy()">Destroy</button>
+          <button onclick="testRecreate()">Recreate</button>
+        </div>
+      </div>
+
+      <div class="info">
+        <strong>Frosted Canvas Library Test</strong><br />
+        Click buttons to test preset switching<br />
+        Test destroy/recreate to verify cleanup
+      </div>
+    </div>
+
+    <script type="module">
+      import FrostCanvas from './src/lib.js';
+
+      window.frost = new FrostCanvas('#bg', {
+        preset: 0,
+        autoResize: true,
+      });
+
+      window.testDestroy = () => {
+        if (window.frost) {
+          window.frost.destroy();
+          window.frost = null;
+          console.log('Destroyed');
+        }
+      };
+
+      window.testRecreate = () => {
+        if (!window.frost) {
+          window.frost = new FrostCanvas('#bg', {
+            preset: 0,
+            autoResize: true,
+          });
+          console.log('Recreated');
+        }
+      };
+
+      console.log('Frosted Canvas initialized');
+    </script>
+  </body>
+</html>

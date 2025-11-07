@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frosted Canvas - Resources</title>
+      <link rel="icon" type="image/svg+xml" href="/fc.png" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0f;
+      min-height: 100vh;
+      padding: 40px 20px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(30, 30, 40, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(20, 20, 30, 0.3) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 60px;
+    }
+
+    .header h1 {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .header p {
+      font-size: 20px;
+      opacity: 0.9;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: rgba(20, 20, 30, 0.6);
+      backdrop-filter: blur(30px) saturate(120%);
+      -webkit-backdrop-filter: blur(30px) saturate(120%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      background: rgba(30, 30, 40, 0.7);
+    }
+
+    .card-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .card p {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .card a {
+      display: inline-block;
+      padding: 12px 24px;
+      background: rgba(96, 165, 250, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: all 0.3s;
+      box-shadow: 0 4px 16px rgba(96, 165, 250, 0.2);
+    }
+
+    .card a:hover {
+      background: rgba(96, 165, 250, 0.25);
+      border-color: rgba(96, 165, 250, 0.5);
+      box-shadow: 0 6px 24px rgba(96, 165, 250, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .section-title {
+      color: white;
+      font-size: 28px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .footer {
+      text-align: center;
+      color: white;
+      margin-top: 60px;
+      opacity: 0.9;
+    }
+
+    .footer a {
+      color: white;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 32px;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎨 Frosted Canvas</h1>
+      <p>Beautiful shader gradients for any div element</p>
+    </div>
+
+    <h3 class="section-title">📖 Documentation</h3>
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon">📚</div>
+        <h2>Interactive Docs</h2>
+        <p>Complete documentation with sidebar navigation, API reference, and guides.</p>
+        <a href="docs.html">Open Documentation</a>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h2>Quick Start</h2>
+        <p>Get started in 5 minutes with installation and basic usage examples.</p>
+        <a href="docs.html?page=quick-start">Quick Start Guide</a>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🎨</div>
+        <h2>Custom Colors</h2>
+        <p>Learn how to create your own unique gradients with custom colors.</p>
+        <a href="docs.html?page=custom-colors">Color Guide</a>
+      </div>
+    </div>
+
+    <h3 class="section-title">🛠️ Interactive Tools</h3>
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon">🎨</div>
+        <h2>Color Customizer</h2>
+        <p>Visual tool to create and test custom gradients with real-time preview.</p>
+        <a href="color-customizer.html">Open Customizer</a>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">📸</div>
+        <h2>Examples Gallery</h2>
+        <p>See 6 different custom gradient examples for inspiration.</p>
+        <a href="custom-example.html">View Gallery</a>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🧪</div>
+        <h2>Test Page</h2>
+        <p>Test all features including presets, destroy, and recreate.</p>
+        <a href="test.html">Open Test Page</a>
+      </div>
+    </div>
+
+    <h3 class="section-title">🌐 Live Demos</h3>
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon">🚀</div>
+        <h2>Main Demo</h2>
+        <p>See the original demo with preset carousel and glass UI.</p>
+        <a href="index.html">View Demo</a>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">💻</div>
+        <h2>Usage Example</h2>
+        <p>See how to use the library in a real project.</p>
+        <a href="example.html">View Example</a>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🌍</div>
+        <h2>Deployed Site</h2>
+        <p>Visit the live deployed version on Vercel.</p>
+        <a href="https://frosted-canvas.vercel.app/" target="_blank">Visit Site</a>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>
+        <strong>Frosted Canvas</strong> by 
+        <a href="https://github.com/SahilK-027" target="_blank">SahilK-027</a>
+      </p>
+      <p style="margin-top: 8px;">
+        <a href="https://github.com/SahilK-027/frosted-canvas" target="_blank">GitHub</a> | 
+        <a href="docs.html">Documentation</a> | 
+        <a href="https://frosted-canvas.vercel.app/" target="_blank">Live Demo</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
