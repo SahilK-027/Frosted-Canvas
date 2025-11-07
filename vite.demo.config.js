@@ -11,7 +11,6 @@ export default defineConfig({
         docs: 'docs.html',
         'index-docs': 'index-docs.html',
         'color-customizer': 'color-customizer.html',
-        'custom-example': 'custom-example.html',
         example: 'example.html',
         test: 'test.html'
       }

@@ -378,9 +378,6 @@
           <a class="nav-item" href="color-customizer.html" target="_blank"
             >Color Customizer</a
           >
-          <a class="nav-item" href="custom-example.html" target="_blank"
-            >Examples Gallery</a
-          >
           <a class="nav-item" href="test.html" target="_blank">Test Page</a>
         </div>
 
@@ -450,7 +447,6 @@ frost.setColors({
         <h2>Interactive Tools</h2>
         <ul>
           <li><a href="color-customizer.html" target="_blank">Color Customizer</a> - Create and test custom gradients</li>
-          <li><a href="custom-example.html" target="_blank">Examples Gallery</a> - See 6 different custom gradients</li>
           <li><a href="test.html" target="_blank">Test Page</a> - Test all features</li>
         </ul>
       `,
@@ -591,22 +587,62 @@ frost.setColors({
 });</code></pre>
 
         <h2>Understanding the Color Palette</h2>
-        <p>The shader uses 4 color palettes (A, B, C, D) that work together:</p>
+        <p><em>Intro: You can find a YouTube mini-explanation of this article here: <a href="https://www.youtube.com/shorts/TH3OTy5fTog" target="_blank">https://www.youtube.com/shorts/TH3OTy5fTog</a></em></p>
+
+        <h3>The Theory Behind Procedural Color Palettes</h3>
+        <p>When doing procedural graphics, adding color variation to elements is essential. From grass blades to rocks to entire landscapes, all scales of detail benefit from subtle color variation. Frosted Canvas uses a cosine-based palette formula - one of the cheapest and most coder-friendly methods for generating beautiful color gradients.</p>
+
+        <h3>The Cosine Formula</h3>
+        <p>The color palette is generated using this simple mathematical expression:</p>
+        <pre><code>color(t) = a + b · cos[2π(c·t+d)]</code></pre>
+        
+        <p>Where:</p>
         <ul>
-          <li><strong>Palette A (Offset)</strong>: Base color offset - shifts the entire color range</li>
-          <li><strong>Palette B (Amplitude)</strong>: Color intensity - controls how vibrant colors are</li>
-          <li><strong>Palette C (Frequency)</strong>: Color variation - controls how colors transition</li>
-          <li><strong>Palette D (Phase)</strong>: Color shift - offsets the color wave</li>
+          <li><code>t</code> runs from 0 to 1 (normalized palette index)</li>
+          <li><code>a</code> (Palette A) = offset - biases the color</li>
+          <li><code>b</code> (Palette B) = amplitude - scales the color</li>
+          <li><code>c</code> (Palette C) = frequency - controls oscillation count</li>
+          <li><code>d</code> (Palette D) = phase - shifts the wave</li>
         </ul>
 
-        <p>Each palette takes RGB values from 0 to 1:</p>
+        <p>As <code>t</code> progresses, the cosine oscillates <code>c</code> times with a phase of <code>d</code>. The result is scaled and biased by <code>a</code> and <code>b</code> to achieve the desired contrast and brightness.</p>
+
+        <h3>Why Cosine?</h3>
+        <p>Despite old-school wisdom suggesting trigonometric functions are expensive, on modern GPUs computing a cosine is extremely fast - way faster than any approximation attempt. This makes it perfect for real-time shader graphics.</p>
+
+        <h3>The Four Palettes Explained</h3>
+        <p>To get hue variation, all four parameters (a, b, c, d) are vectors with three components (red, green, blue). Each palette serves a specific purpose:</p>
+        <ul>
+          <li><strong>Palette A (Offset)</strong>: Base color offset - shifts the entire color range up or down</li>
+          <li><strong>Palette B (Amplitude)</strong>: Color intensity - controls how vibrant and contrasted colors are</li>
+          <li><strong>Palette C (Frequency)</strong>: Color variation - controls how quickly colors transition and oscillate</li>
+          <li><strong>Palette D (Phase)</strong>: Color shift - offsets the color wave to create different starting points</li>
+        </ul>
+
+        <h3>Continuity Tips</h3>
+        <ul>
+          <li>To ensure palettes cycle exactly over the 0..1 interval, make <code>c</code> an integer number of halves (0.0, 0.5, 1.0, 1.5, 2.0, ...)</li>
+          <li>For C1 continuity (smooth transitions), make <code>c</code> an integer - you'll get infinite degree continuity</li>
+        </ul>
+
+        <h3>RGB Values (0 to 1)</h3>
+        <p>Each palette takes RGB values normalized from 0 to 1:</p>
         <ul>
           <li><code>[1.0, 0.0, 0.0]</code> = Red</li>
           <li><code>[0.0, 1.0, 0.0]</code> = Green</li>
           <li><code>[0.0, 0.0, 1.0]</code> = Blue</li>
           <li><code>[1.0, 1.0, 1.0]</code> = White</li>
           <li><code>[0.0, 0.0, 0.0]</code> = Black</li>
+          <li><code>[0.5, 0.5, 0.5]</code> = Mid Gray (commonly used for Palette B)</li>
         </ul>
+
+        <h3>Shader Implementation</h3>
+        <p>The actual shader code is beautifully simple:</p>
+        <pre><code>// Cosine based palette, 4 vec3 parameters
+vec3 palette(in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d) {
+  return a + b * cos(6.28318 * (c * t + d));
+}</code></pre>
+        <p>Note: 6.28318 is 2π, used to complete the cosine wave cycle.</p>
 
         <h2>Color Examples</h2>
 
@@ -986,72 +1022,38 @@ frost.setConfig({
         <h1>Presets</h1>
         <p>Frosted Canvas comes with 44 beautiful preset gradients.</p>
 
+        <h2>Featured Presets</h2>
         <table>
           <tr>
             <th>Index</th>
             <th>Name</th>
             <th>Description</th>
           </tr>
-          <tr>
-            <td>0</td>
-            <td>Sunset Glow</td>
-            <td>Warm orange and pink tones</td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>Ocean Breeze</td>
-            <td>Cool blue and teal waves</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Forest Mist</td>
-            <td>Green and earthy tones</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Purple Haze</td>
-            <td>Deep purple and violet</td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td>Golden Hour</td>
-            <td>Rich golden yellows</td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td>Arctic Aurora</td>
-            <td>Icy blues and whites</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td>Desert Heat</td>
-            <td>Warm reds and oranges</td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td>Midnight Sky</td>
-            <td>Deep blues and blacks</td>
-          </tr>
-          <tr>
-            <td>8</td>
-            <td>Cherry Blossom</td>
-            <td>Soft pinks and whites</td>
-          </tr>
-          <tr>
-            <td>9</td>
-            <td>Cosmic Dust</td>
-            <td>Purple and blue nebula</td>
-          </tr>
+          <tr><td>0</td><td>Molten Peach</td><td>Warm molten peach with lively motion</td></tr>
+          <tr><td>1</td><td>Paper Koi</td><td>Gentle paper-like pastels with pond tones</td></tr>
+          <tr><td>2</td><td>Sunset Bloom</td><td>Warm orange center with soft grain</td></tr>
+          <tr><td>3</td><td>Aurora Glow</td><td>The northern lights</td></tr>
+          <tr><td>4</td><td>Deep Ocean</td><td>Muted teals and deep blues, calm motion</td></tr>
+          <tr><td>5</td><td>Slate Grain</td><td>High-grain monochrome, cinematic</td></tr>
+          <tr><td>10</td><td>Coral Reef</td><td>Bright coral / teal interplay</td></tr>
+          <tr><td>13</td><td>Forest Mist</td><td>Subtle greens and cool fog</td></tr>
+          <tr><td>14</td><td>Solar Flare</td><td>Fiery amber with fast motion</td></tr>
+          <tr><td>15</td><td>Arctic Dawn</td><td>Pale blues, crisp and calm</td></tr>
+          <tr><td>20</td><td>Candy Cloud</td><td>Playful pinks and blues</td></tr>
+          <tr><td>30</td><td>Cosmic Bloom</td><td>Galactic gradients with soft pulsation</td></tr>
         </table>
 
+        <h2>All 44 Presets</h2>
+        <p>Molten Peach, Paper Koi, Sunset Bloom, Aurora Glow, Deep Ocean, Slate Grain, Peach Mirage, Crimson Dusk, Watermelon, Electric Indigo, Coral Reef, Lemon Zest, Midnight Velvet, Forest Mist, Solar Flare, Arctic Dawn, Vintage Sepia, Lavender Haze, Moss Grove, Copper Sunset, Candy Cloud, Meteor Storm, Tropical Night, Dusty Rose, Slate Storm, Glacial Drift, Amber Glow, Neon Canyon, Petrol Dream, Saffron Mist, Cosmic Bloom, Porcelain Dawn, Obsidian Fade, Rose Quartz, Velvet Plum, Horizon Teal, Dusty Denim, Brass Ember, Iris Bloom, Celadon Whisper, Starling Night, Polar Mint, Silent Harbor.</p>
+
         <h2>Usage</h2>
-        <pre><code>// Use a specific preset
+        <pre><code>// Use a specific preset (0-43)
 const frost = new FrostedCanvas('#container', {
-  preset: 3  // Purple Haze
+  preset: 3  // Aurora Glow
 });
 
 // Change preset dynamically
-frost.setPreset(7);  // Midnight Sky</code></pre>
+frost.setPreset(15);  // Arctic Dawn</code></pre>
 
         <h2>See Them Live</h2>
         <p>Visit the <a href="https://frosted-canvas.vercel.app/" target="_blank">live demo</a> to see all presets in action!</p>
@@ -1093,7 +1095,6 @@ localStorage.setItem('myGradient', JSON.stringify({ colors, config }));</code></
         <h2>🛠️ New Tools</h2>
         <ul>
           <li><a href="color-customizer.html" target="_blank">Color Customizer</a> - Interactive tool to create custom gradients</li>
-          <li><a href="custom-example.html" target="_blank">Examples Gallery</a> - 6 custom gradient examples</li>
           <li>Complete documentation with guides and examples</li>
         </ul>
 
