@@ -1,6 +1,6 @@
 {
   "name": "frosted-canvas",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Interactive shader gradients for any div element",
   "type": "module",
   "main": "./dist/frosted-canvas.umd.js",
