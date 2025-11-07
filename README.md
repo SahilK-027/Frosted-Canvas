@@ -1,36 +1,35 @@
-# 🎨 Frosted Canvas
+# Frosted Canvas
 
 Beautiful, interactive shader gradients for any div element. Built with Three.js and WebGL shaders.
 
 [![npm version](https://img.shields.io/npm/v/frosted-canvas.svg)](https://www.npmjs.com/package/frosted-canvas)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-## ✨ Features
+## Features
 
-- 🎨 44 beautiful preset gradients
-- 🎨 **Create custom colors** - full control over gradients
-- 🔧 Simple API - just point to a div
-- 📦 Works with any framework (React, Vue, Svelte, etc.)
-- 🎯 Auto-resizes with container
-- 🚀 Lightweight and performant
-- 💻 No build tools required (CDN available)
+- 44 beautiful preset gradients with smooth animations
+- Custom color API for creating unique gradients
+- Simple, declarative API
+- Framework agnostic (React, Vue, Svelte, vanilla JS)
+- Automatic container resizing
+- Lightweight (~98KB) with Three.js as peer dependency
+- CDN support for no-build workflows
 
-## 📦 Installation
+## Installation
 
 ```bash
 npm install frosted-canvas three
 ```
 
-> **Why install Three.js separately?**  
-> Three.js is a peer dependency to keep the package lightweight (~98KB instead of ~698KB). This also prevents duplicate installations if you're already using Three.js in your project.
+**Note**: Three.js is a peer dependency to keep the package lightweight (~98KB instead of ~698KB) and prevent duplicate installations.
 
-## 🚀 Quick Start
+## Quick Start
 
 ```javascript
-import FrostCanvas from 'frosted-canvas';
+import FrostedCanvas from 'frosted-canvas';
 
-// Use a preset
-const frost = new FrostCanvas('#my-div', { preset: 0 });
+// Initialize with a preset
+const frost = new FrostedCanvas('#container', { preset: 0 });
 
 // Or create custom colors
 frost.setColors({
@@ -40,38 +39,44 @@ frost.setColors({
 ```
 
 ```html
-<div id="my-div" style="width: 100%; height: 400px;"></div>
+<div id="container" style="width: 100%; height: 400px;"></div>
 ```
 
-That's it! 🎉 [See full quick start →](./QUICK_START.md)
+## Documentation
 
-## 📖 Documentation
+**[View Full Documentation](https://frosted-canvas.vercel.app/docs.html)**
 
-### Options
+### Configuration
 
 ```javascript
-const frost = new FrostCanvas('#container', {
-  preset: 0,           // Starting preset (0-43, 44 total presets)
+new FrostedCanvas(container, {
+  preset: 0,           // Preset index (0-43)
   showGUI: false,      // Show debug controls
-  autoResize: true     // Auto-resize on container changes
+  autoResize: true     // Auto-resize with container
 });
 ```
 
-### API Methods
+### API Reference
 
+#### Methods
+
+**setPreset(index)**
 ```javascript
-// Change preset
 frost.setPreset(3);
+```
 
-// Set custom colors (RGB values 0-1)
+**setColors(colors)**
+```javascript
 frost.setColors({
   paletteA: [0.9, 0.65, 1.0],  // Offset
   paletteB: [0.5, 0.5, 0.5],   // Amplitude
   paletteC: [1.0, 0.7, 0.4],   // Frequency
   paletteD: [0.0, 0.15, 0.2]   // Phase
 });
+```
 
-// Set configuration
+**setConfig(config)**
+```javascript
 frost.setConfig({
   noiseScale: 0.3,
   noiseStrength: 0.35,
@@ -79,55 +84,50 @@ frost.setConfig({
   grainIntensity: 0.03,
   vignetteStrength: 3.0
 });
+```
 
-// Get current colors
+**getColors()** / **getConfig()**
+```javascript
 const colors = frost.getColors();
-
-// Get current config
 const config = frost.getConfig();
+```
 
-// Clean up when done
+**destroy()**
+```javascript
 frost.destroy();
 ```
 
-### Available Presets
+### Presets
 
-**44 Beautiful Gradients** - Here are some featured presets:
+44 preset gradients are available (indexed 0-43). Featured presets include:
 
 | Index | Name | Description |
 |-------|------|-------------|
 | 0 | Molten Peach | Warm molten peach with lively motion |
-| 1 | Paper Koi | Gentle paper-like pastels |
-| 2 | Sunset Bloom | Warm orange center with soft grain |
-| 3 | Aurora Glow | The northern lights |
+| 3 | Aurora Glow | Northern lights effect |
 | 4 | Deep Ocean | Muted teals and deep blues |
-| 5 | Slate Grain | High-grain monochrome, cinematic |
-| 10 | Coral Reef | Bright coral / teal interplay |
+| 5 | Slate Grain | High-grain monochrome |
 | 14 | Solar Flare | Fiery amber with fast motion |
-| 15 | Arctic Dawn | Pale blues, crisp and calm |
-| 21 | Candy Cloud | Playful pinks and blues |
 | 30 | Cosmic Bloom | Galactic gradients |
-| 43 | Silent Harbor | Calm harbor dusk |
 
-**All 44 Presets**: Molten Peach, Paper Koi, Sunset Bloom, Aurora Glow, Deep Ocean, Slate Grain, Peach Mirage, Crimson Dusk, Watermelon, Electric Indigo, Coral Reef, Lemon Zest, Midnight Velvet, Forest Mist, Solar Flare, Arctic Dawn, Vintage Sepia, Lavender Haze, Moss Grove, Copper Sunset, Candy Cloud, Meteor Storm, Tropical Night, Dusty Rose, Slate Storm, Glacial Drift, Amber Glow, Neon Canyon, Petrol Dream, Saffron Mist, Cosmic Bloom, Porcelain Dawn, Obsidian Fade, Rose Quartz, Velvet Plum, Horizon Teal, Dusty Denim, Brass Ember, Iris Bloom, Celadon Whisper, Starling Night, Polar Mint, Silent Harbor.
+[View all 44 presets](https://frosted-canvas.vercel.app/docs.html)
 
-## 🎯 Framework Examples
+## Framework Integration
 
 ### React
 
 ```jsx
 import { useEffect, useRef } from 'react';
-import FrostCanvas from 'frosted-canvas';
+import FrostedCanvas from 'frosted-canvas';
 
 function Hero() {
   const containerRef = useRef(null);
   const frostRef = useRef(null);
 
   useEffect(() => {
-    frostRef.current = new FrostCanvas(containerRef.current, {
+    frostRef.current = new FrostedCanvas(containerRef.current, {
       preset: 0
     });
-
     return () => frostRef.current?.destroy();
   }, []);
 
@@ -150,90 +150,86 @@ function Hero() {
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import FrostCanvas from 'frosted-canvas';
+import FrostedCanvas from 'frosted-canvas';
 
 const container = ref(null);
 let frost = null;
 
 onMounted(() => {
-  frost = new FrostCanvas(container.value, { preset: 0 });
+  frost = new FrostedCanvas(container.value, { preset: 0 });
 });
-
 onUnmounted(() => frost?.destroy());
 </script>
 ```
 
-### Vanilla JS
+### Vanilla JavaScript
 
 ```html
-<div id="bg" style="width: 100%; height: 100vh;"></div>
+<div id="background" style="width: 100%; height: 100vh;"></div>
 
 <script type="module">
-  import FrostCanvas from 'frosted-canvas';
-  new FrostCanvas('#bg', { preset: 0 });
+  import FrostedCanvas from 'frosted-canvas';
+  new FrostedCanvas('#background', { preset: 0 });
 </script>
 ```
 
-## 🌐 CDN Usage (No Build Tools)
+## CDN Usage
+
+For projects without a build step:
 
 ```html
 <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.181.0/build/three.module.js",
-      "three/": "https://unpkg.com/three@0.181.0/"
-    }
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.181.0/build/three.module.js",
+    "three/": "https://unpkg.com/three@0.181.0/"
   }
+}
 </script>
 
 <script type="module">
-  import FrostCanvas from 'https://unpkg.com/frosted-canvas/dist/frosted-canvas.es.js';
-  new FrostCanvas('#background');
+  import FrostedCanvas from 'https://unpkg.com/frosted-canvas/dist/frosted-canvas.es.js';
+  new FrostedCanvas('#background', { preset: 0 });
 </script>
 ```
 
-See [CDN_USAGE.md](./CDN_USAGE.md) for complete examples.
+## Resources
 
-## 🛠️ Development
+- [Documentation](https://frosted-canvas.vercel.app/docs.html)
+- [Interactive Demo](https://frosted-canvas.vercel.app/)
+- [Color Customizer](https://frosted-canvas.vercel.app/color-customizer.html)
+- [Quick Reference](./QUICK_REFERENCE.md)
+- [Custom Colors Guide](./CUSTOM_COLORS.md)
+- [Usage Examples](./USAGE_EXAMPLES.md)
+
+## Development
 
 ```bash
 # Install dependencies
 npm install
 
-# Run dev server
+# Start development server
 npm run dev
 
-# Build library
+# Build library for npm
 npm run build
+
+# Build demo site
+npm run build:demo
 ```
 
-## 📝 Documentation
+## Contributing
 
-- [Quick Reference](./QUICK_REFERENCE.md) - Cheat sheet
-- [Custom Colors Guide](./CUSTOM_COLORS.md) - Create your own gradients
-- [Getting Started Guide](./GETTING_STARTED.md) - Detailed setup
-- [Usage Examples](./USAGE_EXAMPLES.md) - 12+ real examples
-- [CDN Usage](./CDN_USAGE.md) - No build tools
-- [Publishing Guide](./PUBLISHING.md) - For contributors
+Contributions are welcome. Please open an issue or submit a pull request.
 
-## 🎨 Live Demo
+## License
 
-Check out the live demo with interactive color customizer:
-- **Demo**: https://frosted-canvas.vercel.app/
-- **Color Customizer**: Open `color-customizer.html` locally
+MIT License - see [LICENSE](./LICENSE) for details.
 
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to open issues or submit PRs.
-
-## 📄 License
-
-MIT © [SahilK-027](https://github.com/SahilK-027)
-
-## 🙏 Credits
+## Credits
 
 Built with [Three.js](https://threejs.org/) v0.181.0
 
 ---
 
-Made with ❤️ by [SahilK-027](https://github.com/SahilK-027)
+Created by [SahilK-027](https://github.com/SahilK-027)
