@@ -93,6 +93,12 @@ class ShaderRenderer {
         uPaletteB: { value: new THREE.Vector3(0.5, 0.5, 0.5) },
         uPaletteC: { value: new THREE.Vector3(1.0, 0.7, 0.4) },
         uPaletteD: { value: new THREE.Vector3(0.0, 0.15, 0.2) },
+        // Advanced gradient controls
+        uDomainWarpStrength: { value: 0.0 },
+        uTurbulence: { value: 0.0 },
+        uGradientAngle: { value: 0.0 },
+        uColorSpread: { value: 1.0 },
+        uFlowSpeed: { value: 0.3 },
       },
     });
 
@@ -129,6 +135,39 @@ class ShaderRenderer {
       .max(0.5)
       .step(0.01)
       .name('Speed');
+    animationFolder
+      .add(this.material.uniforms.uFlowSpeed, 'value')
+      .min(0)
+      .max(1.0)
+      .step(0.01)
+      .name('Flow Speed');
+
+    const gradientFolder = this.gui.addFolder('Gradient');
+    gradientFolder.close();
+    gradientFolder
+      .add(this.material.uniforms.uGradientAngle, 'value')
+      .min(0)
+      .max(Math.PI * 2)
+      .step(0.01)
+      .name('Angle');
+    gradientFolder
+      .add(this.material.uniforms.uColorSpread, 'value')
+      .min(0.1)
+      .max(3.0)
+      .step(0.1)
+      .name('Color Spread');
+    gradientFolder
+      .add(this.material.uniforms.uDomainWarpStrength, 'value')
+      .min(0)
+      .max(0.5)
+      .step(0.01)
+      .name('Warp Strength');
+    gradientFolder
+      .add(this.material.uniforms.uTurbulence, 'value')
+      .min(0)
+      .max(1.0)
+      .step(0.05)
+      .name('Turbulence');
 
     const noiseFolder = this.gui.addFolder('Noise');
     noiseFolder.close();

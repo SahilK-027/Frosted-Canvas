@@ -22,6 +22,7 @@ class FrostCanvas {
       showPresets: options.showPresets ?? false,
       preset: options.preset ?? 0,
       autoResize: options.autoResize ?? true,
+      static: options.static ?? false,
       ...options,
     };
 
@@ -103,6 +104,12 @@ class FrostCanvas {
         uPaletteB: { value: new THREE.Vector3(0.5, 0.5, 0.5) },
         uPaletteC: { value: new THREE.Vector3(1.0, 0.7, 0.4) },
         uPaletteD: { value: new THREE.Vector3(0.0, 0.15, 0.2) },
+        // Advanced gradient controls
+        uDomainWarpStrength: { value: 0.15 },
+        uTurbulence: { value: 0.2 },
+        uGradientAngle: { value: 0.0 },
+        uColorSpread: { value: 1.0 },
+        uFlowSpeed: { value: 0.3 },
       },
     });
 
@@ -142,6 +149,39 @@ class FrostCanvas {
       .max(0.5)
       .step(0.01)
       .name('Speed');
+    animationFolder
+      .add(this.material.uniforms.uFlowSpeed, 'value')
+      .min(0)
+      .max(1.0)
+      .step(0.01)
+      .name('Flow Speed');
+
+    const gradientFolder = this.gui.addFolder('Gradient');
+    gradientFolder.close();
+    gradientFolder
+      .add(this.material.uniforms.uGradientAngle, 'value')
+      .min(0)
+      .max(Math.PI * 2)
+      .step(0.01)
+      .name('Angle');
+    gradientFolder
+      .add(this.material.uniforms.uColorSpread, 'value')
+      .min(0.1)
+      .max(3.0)
+      .step(0.1)
+      .name('Color Spread');
+    gradientFolder
+      .add(this.material.uniforms.uDomainWarpStrength, 'value')
+      .min(0)
+      .max(0.5)
+      .step(0.01)
+      .name('Warp Strength');
+    gradientFolder
+      .add(this.material.uniforms.uTurbulence, 'value')
+      .min(0)
+      .max(1.0)
+      .step(0.05)
+      .name('Turbulence');
 
     const noiseFolder = this.gui.addFolder('Noise');
     noiseFolder.close();
@@ -180,6 +220,11 @@ class FrostCanvas {
     this.geometry.dispose();
     this.geometry = new THREE.PlaneGeometry(planeWidth, planeHeight, 32, 32);
     this.mesh.geometry = this.geometry;
+    
+    // Re-render if in static mode
+    if (this.options.static) {
+      this.renderer.render(this.scene, this.camera);
+    }
   }
 
   applyPresetImmediate(preset) {
@@ -196,6 +241,11 @@ class FrostCanvas {
     const clamped = Math.max(0, Math.min(index, this.presets.length - 1));
     this.currentPresetIndex = clamped;
     this.applyPresetImmediate(this.presets[clamped]);
+    
+    // Re-render if in static mode
+    if (this.options.static) {
+      this.renderer.render(this.scene, this.camera);
+    }
   }
 
   setColors(colors) {
@@ -229,6 +279,11 @@ class FrostCanvas {
         colors.paletteD[2]
       );
     }
+    
+    // Re-render if in static mode
+    if (this.options.static) {
+      this.renderer.render(this.scene, this.camera);
+    }
   }
 
   setConfig(config) {
@@ -244,6 +299,21 @@ class FrostCanvas {
       u.uGrainIntensity.value = config.grainIntensity;
     if (config.vignetteStrength !== undefined)
       u.uVignetteStrength.value = config.vignetteStrength;
+    if (config.domainWarpStrength !== undefined)
+      u.uDomainWarpStrength.value = config.domainWarpStrength;
+    if (config.turbulence !== undefined)
+      u.uTurbulence.value = config.turbulence;
+    if (config.gradientAngle !== undefined)
+      u.uGradientAngle.value = config.gradientAngle;
+    if (config.colorSpread !== undefined)
+      u.uColorSpread.value = config.colorSpread;
+    if (config.flowSpeed !== undefined)
+      u.uFlowSpeed.value = config.flowSpeed;
+    
+    // Re-render if in static mode
+    if (this.options.static) {
+      this.renderer.render(this.scene, this.camera);
+    }
   }
 
   getColors() {
@@ -264,20 +334,36 @@ class FrostCanvas {
       animationSpeed: u.uAnimationSpeed.value,
       grainIntensity: u.uGrainIntensity.value,
       vignetteStrength: u.uVignetteStrength.value,
+      domainWarpStrength: u.uDomainWarpStrength.value,
+      turbulence: u.uTurbulence.value,
+      gradientAngle: u.uGradientAngle.value,
+      colorSpread: u.uColorSpread.value,
+      flowSpeed: u.uFlowSpeed.value,
     };
   }
 
   animate() {
-    const elapsed = this.clock.getElapsedTime();
-    this.material.uniforms.uTime.value = elapsed;
+    if (!this.options.static) {
+      const elapsed = this.clock.getElapsedTime();
+      this.material.uniforms.uTime.value = elapsed;
+    }
 
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
-    this.animationId = requestAnimationFrame(() => this.animate());
+    
+    if (!this.options.static) {
+      this.animationId = requestAnimationFrame(() => this.animate());
+    }
   }
 
   startAnimationLoop() {
-    this.animate();
+    if (this.options.static) {
+      // For static backgrounds, render once
+      this.renderer.render(this.scene, this.camera);
+    } else {
+      // For animated backgrounds, start the animation loop
+      this.animate();
+    }
   }
 
   destroy() {

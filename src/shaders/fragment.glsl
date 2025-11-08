@@ -11,6 +11,13 @@ uniform vec3 uPaletteB;
 uniform vec3 uPaletteC;
 uniform vec3 uPaletteD;
 
+// Advanced gradient controls
+uniform float uDomainWarpStrength;  // How much to warp the coordinate space
+uniform float uTurbulence;          // Additional noise complexity
+uniform float uGradientAngle;       // Rotation angle for gradient direction
+uniform float uColorSpread;         // How spread out colors are
+uniform float uFlowSpeed;           // Independent flow animation speed
+
 // Varying
 varying vec2 vUv;
 
@@ -72,6 +79,45 @@ vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
     return a + b * cos(6.28318 * (c * t + d));
 }
 
+// Rotate 2D coordinates
+vec2 rotate2D(vec2 uv, float angle) {
+    float s = sin(angle);
+    float c = cos(angle);
+    mat2 rot = mat2(c, -s, s, c);
+    return rot * (uv - 0.5) + 0.5;
+}
+
+// Domain warping - warp coordinate space using noise
+vec2 domainWarp(vec2 uv, float time, float strength, float scale) {
+    vec2 warp = vec2(
+        snoise((uv + vec2(time * 0.1, 0.0)) * scale),
+        snoise((uv + vec2(0.0, time * 0.1)) * scale)
+    );
+    
+    // Second layer of warping for more organic feel
+    warp += vec2(
+        snoise((uv + warp * 0.5 + vec2(time * 0.15, time * 0.08)) * scale * 2.0),
+        snoise((uv + warp * 0.5 + vec2(-time * 0.08, time * 0.15)) * scale * 2.0)
+    ) * 0.5;
+    
+    return uv + warp * strength;
+}
+
+// Fractional Brownian Motion for turbulence
+float fbm(vec2 uv, float time, float scale) {
+    float value = 0.0;
+    float amplitude = 0.5;
+    float frequency = 1.0;
+    
+    for(int i = 0; i < 5; i++) {
+        value += amplitude * snoise((uv + time * 0.1 * float(i + 1)) * scale * frequency);
+        amplitude *= 0.5;
+        frequency *= 2.0;
+    }
+    
+    return value;
+}
+
 void main()
 {
     vec2 uv = vUv;
@@ -82,19 +128,30 @@ void main()
 
     // Animate the noise layers
     float timeScale = uTime * uAnimationSpeed;
+    float flowTime = uTime * uFlowSpeed;
 
-    // Create flowing, organic gradient base
-    float noise1 = snoise((uv + vec2(timeScale * 0.2, timeScale * 0.15)) * 2.0 * scale) * 0.5;
-    float noise2 = snoise((uv + vec2(-timeScale * 0.18, timeScale * 0.22)) * 4.0 * scale) * 0.25;
-    float noise3 = snoise((uv + vec2(timeScale * 0.25, -timeScale * 0.12)) * 8.0 * scale) * 0.125;
+    // Apply rotation to gradient
+    vec2 rotatedUv = rotate2D(uv, uGradientAngle);
+    
+    // Apply domain warping for organic distortion
+    vec2 warpedUv = domainWarp(rotatedUv, flowTime, uDomainWarpStrength, scale * 2.0);
+
+    // Create flowing, organic gradient base with turbulence
+    float noise1 = snoise((warpedUv + vec2(timeScale * 0.2, timeScale * 0.15)) * 2.0 * scale) * 0.5;
+    float noise2 = snoise((warpedUv + vec2(-timeScale * 0.18, timeScale * 0.22)) * 4.0 * scale) * 0.25;
+    float noise3 = snoise((warpedUv + vec2(timeScale * 0.25, -timeScale * 0.12)) * 8.0 * scale) * 0.125;
+
+    // Add turbulence layer
+    float turbulence = fbm(warpedUv, flowTime, scale) * uTurbulence;
 
     // Combine noise layers for complex distortion
-    float combinedNoise = noise1 + noise2 + noise3;
+    float combinedNoise = noise1 + noise2 + noise3 + turbulence;
 
-    // Create a static gradient input
-    float t = uv.x * 0.5 + uv.y * 0.5 + combinedNoise * uNoiseStrength;
-
-    // Use palette uniforms
+    // Calculate gradient value with enhanced controls
+    float t = warpedUv.x * 0.5 + warpedUv.y * 0.5 + combinedNoise * uNoiseStrength;
+    t *= uColorSpread;
+    
+    // Apply cosine palette
     vec3 color = palette(t, uPaletteA, uPaletteB, uPaletteC, uPaletteD);
 
     // Add fine grain for frosted glass texture

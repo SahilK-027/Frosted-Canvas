@@ -38,13 +38,14 @@ Beautiful, interactive shader gradients for any div element. Built with Three.js
 ## Features
 
 - 44 beautiful preset gradients with smooth animations
+- **NEW v2.0**: Advanced gradient controls with domain warping and turbulence
 - Custom color API for creating unique gradients
 - Simple, declarative API
 - Framework agnostic (React, Vue, Svelte, vanilla JS)
 - Automatic container resizing
 - Lightweight (~98KB) with Three.js as peer dependency
 - CDN support for no-build workflows
-- Fine-grained control over animation and effects
+- Fine-grained control over animation, effects, and gradient flow
 
 ## Installation
 
@@ -67,6 +68,18 @@ const frost = new FrostedCanvas('#container', { preset: 0 });
 
 ```html
 <div id="container" style="width: 100%; height: 400px;"></div>
+```
+
+### Static Background
+
+```javascript
+import FrostedCanvas from 'frosted-canvas';
+
+// Generate a static (non-animated) background
+const frost = new FrostedCanvas('#container', { 
+  preset: 0,
+  static: true 
+});
 ```
 
 ### Custom Colors
@@ -127,6 +140,62 @@ Each palette takes RGB values from 0 to 1:
 
 **Learn more:** [YouTube explanation](https://www.youtube.com/shorts/TH3OTy5fTog) | [Full theory](https://iquilezles.org/articles/palettes/)
 
+## Advanced Gradient Controls (v2.0+)
+
+Version 2.0 introduces powerful new controls for creating more organic and dynamic gradients:
+
+### Domain Warping
+
+**`domainWarpStrength`** (0-0.5): Warps the coordinate space using layered noise for organic, flowing distortions. Higher values create more dramatic warping effects.
+
+```javascript
+frost.setConfig({ domainWarpStrength: 0.25 }); // Moderate organic flow
+```
+
+### Turbulence
+
+**`turbulence`** (0-1.0): Adds fractal Brownian motion (FBM) with 5 octaves of noise for additional complexity and detail. Creates layered, turbulent effects.
+
+```javascript
+frost.setConfig({ turbulence: 0.5 }); // Add fractal detail
+```
+
+### Gradient Rotation
+
+**`gradientAngle`** (0-6.28): Rotates the gradient direction in radians (0° to 360°). Allows dynamic gradient rotation.
+
+```javascript
+frost.setConfig({ gradientAngle: Math.PI / 4 }); // 45 degree rotation
+```
+
+### Color Distribution
+
+**`colorSpread`** (0.1-3.0): Controls how spread out colors are across the gradient. Lower values create tighter color bands, higher values stretch and repeat colors.
+
+```javascript
+frost.setConfig({ colorSpread: 1.5 }); // Wider color distribution
+```
+
+### Flow Animation
+
+**`flowSpeed`** (0-1.0): Independent animation speed for the domain warping flow, separate from the main animation speed for more control.
+
+```javascript
+frost.setConfig({ flowSpeed: 0.6 }); // Faster flowing motion
+```
+
+### Example: Maximum Organic Effect
+
+```javascript
+frost.setConfig({
+  domainWarpStrength: 0.4,
+  turbulence: 0.8,
+  flowSpeed: 0.5,
+  colorSpread: 2.0,
+  gradientAngle: Math.PI / 6,
+});
+```
+
 ## API Reference
 
 ### Constructor
@@ -146,6 +215,7 @@ new FrostedCanvas(container, options);
 | `preset` | number | 0 | Starting preset (0-43) |
 | `showGUI` | boolean | false | Show debug controls |
 | `autoResize` | boolean | true | Auto-resize on container changes |
+| `static` | boolean | false | Generate static (non-animated) background |
 
 ### Methods
 
@@ -172,15 +242,23 @@ frost.setColors({
 
 #### `setConfig(config)`
 
-Adjust animation and effects.
+Adjust animation, effects, and gradient controls.
 
 ```javascript
 frost.setConfig({
+  // Animation & Noise
   noiseScale: 0.3, // 0.1-3.0: Size of noise patterns
   noiseStrength: 0.35, // 0-1.0: Intensity of distortion
   animationSpeed: 0.5, // 0-0.5: Speed of animation
   grainIntensity: 0.03, // 0-0.2: Film grain effect
   vignetteStrength: 3.0, // 0-3.0: Edge darkening
+
+  // Advanced Gradient Controls (v2.0+)
+  domainWarpStrength: 0.15, // 0-0.5: Organic coordinate warping
+  turbulence: 0.2, // 0-1.0: Fractal noise complexity
+  gradientAngle: 0.0, // 0-6.28: Rotation angle in radians
+  colorSpread: 1.0, // 0.1-3.0: Color distribution
+  flowSpeed: 0.3, // 0-1.0: Independent flow animation speed
 });
 ```
 
@@ -230,10 +308,11 @@ frost.destroy();
 | 15    | Arctic Dawn  | Pale blues, crisp and calm                |
 | 20    | Candy Cloud  | Playful pinks and blues                   |
 | 30    | Cosmic Bloom | Galactic gradients with soft pulsation    |
+| 43    | Mystic Flow  | Ethereal flowing gradients with organic warping (v2.0 showcase) |
 
 ### All 44 Presets
 
-Molten Peach, Paper Koi, Sunset Bloom, Aurora Glow, Deep Ocean, Slate Grain, Peach Mirage, Crimson Dusk, Watermelon, Electric Indigo, Coral Reef, Lemon Zest, Midnight Velvet, Forest Mist, Solar Flare, Arctic Dawn, Vintage Sepia, Lavender Haze, Moss Grove, Copper Sunset, Candy Cloud, Meteor Storm, Tropical Night, Dusty Rose, Slate Storm, Glacial Drift, Amber Glow, Neon Canyon, Petrol Dream, Saffron Mist, Cosmic Bloom, Porcelain Dawn, Obsidian Fade, Rose Quartz, Velvet Plum, Horizon Teal, Dusty Denim, Brass Ember, Iris Bloom, Celadon Whisper, Starling Night, Polar Mint, Silent Harbor.
+Molten Peach, Paper Koi, Sunset Bloom, Aurora Glow, Deep Ocean, Slate Grain, Peach Mirage, Crimson Dusk, Watermelon, Electric Indigo, Coral Reef, Lemon Zest, Midnight Velvet, Forest Mist, Solar Flare, Arctic Dawn, Vintage Sepia, Lavender Haze, Moss Grove, Copper Sunset, Candy Cloud, Meteor Storm, Tropical Night, Dusty Rose, Slate Storm, Glacial Drift, Amber Glow, Neon Canyon, Petrol Dream, Saffron Mist, Cosmic Bloom, Porcelain Dawn, Obsidian Fade, Rose Quartz, Velvet Plum, Horizon Teal, Dusty Denim, Brass Ember, Iris Bloom, Celadon Whisper, Starling Night, Polar Mint, Silent Harbor, Mystic Flow.
 
 ## Framework Integration
 
@@ -497,6 +576,15 @@ frost.setColors({
 4. **Use complementary colors**: Colors opposite on the color wheel create vibrant gradients
 5. **Test different noise settings**: Lower noiseScale = larger patterns
 6. **Adjust animation speed**: Slower speeds (0.1-0.3) are often more elegant
+
+### When to Use Static Backgrounds
+
+Use `static: true` when:
+- You want better performance (no animation loop)
+- Creating print-ready or screenshot-friendly designs
+- Building static hero sections or cards
+- Reducing battery consumption on mobile devices
+- You need a beautiful gradient without motion
 
 ### Performance
 

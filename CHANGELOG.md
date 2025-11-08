@@ -1,43 +1,106 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to Frosted Canvas will be documented in this file.
 
-## [1.0.0] - 2025-11-07
+## [2.0.0] - 2025-01-08
 
-### Added
-- Initial release
-- 44 beautiful preset gradients
-- Simple API for initializing with any div element
-- Auto-resize support with ResizeObserver
-- Optional lil-gui debug controls
-- Support for multiple instances on same page
-- Framework examples (React, Vue, Svelte, Next.js)
-- CDN support for no-build-tools usage
-- Comprehensive documentation
+### 🎨 New Features
+
+#### Static Background Option
+- **Static Mode**: New `static` option in constructor for non-animated backgrounds
+- When `static: true`, the background only re-renders when needed (no continuous animation loop)
+- Automatically re-renders when calling `setColors()`, `setConfig()`, `setPreset()`, or on resize
+- Perfect for performance-sensitive scenarios and static designs
+- Reduces CPU/GPU usage and improves battery life on mobile devices
+- Maintains full functionality - all methods work the same way
+
+### 📚 Documentation Updates
+- Updated README.md with static background usage
+- Added static background examples to docs.html
+- Updated API reference with `static` option
+- Added "When to Use Static Backgrounds" section
+- Updated test.html with static/animated mode toggle
+- Added static background example to example.html
+
+---
+
+## [2.0.0] - 2025
+
+### 🎨 Major Features
+
+#### Advanced Gradient Controls
+- **Domain Warping**: New `uDomainWarpStrength` uniform (0-0.5) for organic coordinate space warping
+- **Turbulence**: New `uTurbulence` uniform (0-1.0) adds fractal Brownian motion with 5 octaves
+- **Gradient Rotation**: New `uGradientAngle` uniform (0-6.28 radians) for dynamic gradient rotation
+- **Color Spread**: New `uColorSpread` uniform (0.1-3.0) controls color distribution
+- **Flow Speed**: New `uFlowSpeed` uniform (0-1.0) for independent flow animation control
+
+### 🔧 Technical Improvements
+
+#### Shader Enhancements
+- Added `rotate2D()` function for 2D coordinate rotation
+- Added `domainWarp()` function with two-layer noise warping
+- Added `fbm()` function for fractional Brownian motion
+- Optimized noise layering for better performance
+- Enhanced organic gradient generation
+
+#### API Updates
+- `setConfig()` now accepts 5 new parameters:
+  - `domainWarpStrength`
+  - `turbulence`
+  - `gradientAngle`
+  - `colorSpread`
+  - `flowSpeed`
+- `getConfig()` returns all new gradient parameters
+- All 43 presets updated with new uniform defaults
+
+#### GUI Improvements
+- New "Gradient" folder in debug GUI with 5 controls
+- "Animation" folder now includes Flow Speed control
+- Better organization of controls
+
+#### Color Customizer
+- Added 5 new sliders for gradient controls
+- Real-time preview of all new parameters
+- Updated code output to include new config options
+- Improved UI with better labeling
+
+### 📚 Documentation
+- Updated README.md with v2.0 features
+- New "Advanced Gradient Controls" section
+- Added GRADIENT_FEATURES.md with technical details
+- Updated all code examples
+- Added usage examples for new features
+
+### 🎯 Preset Updates
+All 43 presets now include:
+- `uDomainWarpStrength: 0.0` (default, opt-in)
+- `uTurbulence: 0.0` (default, opt-in)
+- `uGradientAngle: 0.0`
+- `uColorSpread: 1.0`
+- `uFlowSpeed: 0.3`
+
+### 🔄 Breaking Changes
+None - v2.0 is fully backward compatible. New features are opt-in with sensible defaults.
+
+### 📦 Library Defaults
+- `lib.js`: New uniforms have non-zero defaults for enhanced visuals
+  - `uDomainWarpStrength: 0.15`
+  - `uTurbulence: 0.2`
+- `main.js`: New uniforms default to 0 for backward compatibility
+
+---
+
+## [1.0.0] - Initial Release
 
 ### Features
-- Full WebGL shader-based gradients
-- Smooth animations
-- Responsive and performant
-- Clean destroy method for proper cleanup
-- TypeScript-friendly (peer dependency on Three.js)
-
-### Presets (44 Total)
-**Featured Presets:**
-- Molten Peach - Warm molten peach with lively motion
-- Paper Koi - Gentle paper-like pastels
-- Sunset Bloom - Warm orange center with soft grain
-- Aurora Glow - The northern lights
-- Deep Ocean - Muted teals and deep blues
-- Slate Grain - High-grain monochrome, cinematic
-- Electric Indigo - High contrast indigo with punchy motion
-- Coral Reef - Bright coral / teal interplay
-- Midnight Velvet - Very dark, slow-moving velvet tones
-- Forest Mist - Subtle greens and cool fog
-- Solar Flare - Fiery amber with fast motion
-- Arctic Dawn - Pale blues, crisp and calm
-- Candy Cloud - Playful pinks and blues
-- Cosmic Bloom - Galactic gradients
-- Neon Canyon - Hot neon ridges with teal shadows
-
-**And 29 more beautiful presets!** Including: Peach Mirage, Crimson Dusk, Watermelon, Lemon Zest, Vintage Sepia, Lavender Haze, Moss Grove, Copper Sunset, Meteor Storm, Tropical Night, Dusty Rose, Slate Storm, Glacial Drift, Amber Glow, Petrol Dream, Saffron Mist, Porcelain Dawn, Obsidian Fade, Rose Quartz, Velvet Plum, Horizon Teal, Dusty Denim, Brass Ember, Iris Bloom, Celadon Whisper, Starling Night, Polar Mint, and Silent Harbor.
+- 43 beautiful preset gradients
+- Custom color API with 4-palette system
+- Cosine-based procedural gradients
+- Simplex noise for organic motion
+- Animation controls
+- Grain and vignette effects
+- Framework support (React, Vue, Svelte)
+- CDN support
+- Auto-resize functionality
+- Debug GUI

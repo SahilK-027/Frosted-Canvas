@@ -378,6 +378,45 @@
     </div>
 
     <div class="control-group">
+      <h3>Gradient Controls</h3>
+      <div class="slider-input">
+        <label>
+          <span>Warp Strength</span>
+          <span id="warpVal">0.0</span>
+        </label>
+        <input type="range" id="warp" min="0" max="0.5" step="0.01" value="0.0">
+      </div>
+      <div class="slider-input">
+        <label>
+          <span>Turbulence</span>
+          <span id="turbulenceVal">0.0</span>
+        </label>
+        <input type="range" id="turbulence" min="0" max="1" step="0.05" value="0.0">
+      </div>
+      <div class="slider-input">
+        <label>
+          <span>Gradient Angle</span>
+          <span id="angleVal">0°</span>
+        </label>
+        <input type="range" id="angle" min="0" max="6.28" step="0.01" value="0">
+      </div>
+      <div class="slider-input">
+        <label>
+          <span>Color Spread</span>
+          <span id="spreadVal">1.0</span>
+        </label>
+        <input type="range" id="spread" min="0.1" max="3" step="0.1" value="1.0">
+      </div>
+      <div class="slider-input">
+        <label>
+          <span>Flow Speed</span>
+          <span id="flowVal">0.3</span>
+        </label>
+        <input type="range" id="flow" min="0" max="1" step="0.01" value="0.3">
+      </div>
+    </div>
+
+    <div class="control-group">
       <h3>Actions</h3>
       <div class="button-group">
         <button class="primary" onclick="randomize()">🎲 Random</button>
@@ -426,7 +465,12 @@
       const config = {
         animationSpeed: parseFloat(document.getElementById('speed').value),
         noiseScale: parseFloat(document.getElementById('scale').value),
-        noiseStrength: parseFloat(document.getElementById('strength').value)
+        noiseStrength: parseFloat(document.getElementById('strength').value),
+        domainWarpStrength: parseFloat(document.getElementById('warp').value),
+        turbulence: parseFloat(document.getElementById('turbulence').value),
+        gradientAngle: parseFloat(document.getElementById('angle').value),
+        colorSpread: parseFloat(document.getElementById('spread').value),
+        flowSpeed: parseFloat(document.getElementById('flow').value)
       };
       frost.setConfig(config);
       updateCodeOutput();
@@ -446,7 +490,12 @@
 frost.setConfig({
   animationSpeed: ${config.animationSpeed.toFixed(2)},
   noiseScale: ${config.noiseScale.toFixed(1)},
-  noiseStrength: ${config.noiseStrength.toFixed(2)}
+  noiseStrength: ${config.noiseStrength.toFixed(2)},
+  domainWarpStrength: ${config.domainWarpStrength.toFixed(2)},
+  turbulence: ${config.turbulence.toFixed(2)},
+  gradientAngle: ${config.gradientAngle.toFixed(2)},
+  colorSpread: ${config.colorSpread.toFixed(1)},
+  flowSpeed: ${config.flowSpeed.toFixed(2)}
 });`;
       
       document.getElementById('codeOutput').textContent = code;
@@ -476,6 +525,33 @@ frost.setConfig({
 
     document.getElementById('strength').addEventListener('input', (e) => {
       document.getElementById('strengthVal').textContent = e.target.value;
+      updateConfig();
+    });
+
+    // Gradient controls
+    document.getElementById('warp').addEventListener('input', (e) => {
+      document.getElementById('warpVal').textContent = e.target.value;
+      updateConfig();
+    });
+
+    document.getElementById('turbulence').addEventListener('input', (e) => {
+      document.getElementById('turbulenceVal').textContent = e.target.value;
+      updateConfig();
+    });
+
+    document.getElementById('angle').addEventListener('input', (e) => {
+      const degrees = Math.round((parseFloat(e.target.value) * 180) / Math.PI);
+      document.getElementById('angleVal').textContent = degrees + '°';
+      updateConfig();
+    });
+
+    document.getElementById('spread').addEventListener('input', (e) => {
+      document.getElementById('spreadVal').textContent = e.target.value;
+      updateConfig();
+    });
+
+    document.getElementById('flow').addEventListener('input', (e) => {
+      document.getElementById('flowVal').textContent = e.target.value;
       updateConfig();
     });
 
@@ -521,10 +597,20 @@ frost.setConfig({
       document.getElementById('speed').value = 0.5;
       document.getElementById('scale').value = 0.3;
       document.getElementById('strength').value = 0.35;
+      document.getElementById('warp').value = 0.0;
+      document.getElementById('turbulence').value = 0.0;
+      document.getElementById('angle').value = 0;
+      document.getElementById('spread').value = 1.0;
+      document.getElementById('flow').value = 0.3;
       
       document.getElementById('speedVal').textContent = '0.5';
       document.getElementById('scaleVal').textContent = '0.3';
       document.getElementById('strengthVal').textContent = '0.35';
+      document.getElementById('warpVal').textContent = '0.0';
+      document.getElementById('turbulenceVal').textContent = '0.0';
+      document.getElementById('angleVal').textContent = '0°';
+      document.getElementById('spreadVal').textContent = '1.0';
+      document.getElementById('flowVal').textContent = '0.3';
       
       updateCodeOutput();
     };

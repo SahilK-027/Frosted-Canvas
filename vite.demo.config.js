@@ -9,7 +9,6 @@ export default defineConfig({
       input: {
         main: 'index.html',
         docs: 'docs.html',
-        'index-docs': 'index-docs.html',
         'color-customizer': 'color-customizer.html',
         example: 'example.html',
         test: 'test.html'

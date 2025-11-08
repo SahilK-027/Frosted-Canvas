@@ -125,6 +125,18 @@
     </div>
   </div>
 
+  <!-- Static background example -->
+  <div class="section" style="background: #000;">
+    <h2 style="margin-bottom: 20px;">Static backgrounds (no animation)</h2>
+    <p style="opacity: 0.7; margin-bottom: 20px;">Perfect for better performance</p>
+    <div class="card-container" id="static-bg">
+      <div class="card-content">
+        <h3>Static Mode</h3>
+        <p>No animation loop - renders once</p>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import FrostCanvas from './src/lib.js';
 
@@ -138,6 +150,13 @@
     const cardFrost = new FrostCanvas('#card-bg', {
       preset: 5,
       autoResize: true
+    });
+
+    // Static background (no animation)
+    const staticFrost = new FrostCanvas('#static-bg', {
+      preset: 10,
+      autoResize: true,
+      static: true
     });
   </script>
 </body>

@@ -95,12 +95,17 @@
           <button onclick="testDestroy()">Destroy</button>
           <button onclick="testRecreate()">Recreate</button>
         </div>
+        <div style="margin-top: 10px">
+          <button onclick="testStatic()">Static Mode</button>
+          <button onclick="testAnimated()">Animated Mode</button>
+        </div>
       </div>
 
       <div class="info">
         <strong>Frosted Canvas Library Test</strong><br />
         Click buttons to test preset switching<br />
-        Test destroy/recreate to verify cleanup
+        Test destroy/recreate to verify cleanup<br />
+        Test static/animated modes for performance comparison
       </div>
     </div>
 
@@ -128,6 +133,30 @@
           });
           console.log('Recreated');
         }
+      };
+
+      window.testStatic = () => {
+        if (window.frost) {
+          window.frost.destroy();
+        }
+        window.frost = new FrostCanvas('#bg', {
+          preset: 0,
+          autoResize: true,
+          static: true,
+        });
+        console.log('Static mode enabled');
+      };
+
+      window.testAnimated = () => {
+        if (window.frost) {
+          window.frost.destroy();
+        }
+        window.frost = new FrostCanvas('#bg', {
+          preset: 0,
+          autoResize: true,
+          static: false,
+        });
+        console.log('Animated mode enabled');
       };
 
       console.log('Frosted Canvas initialized');

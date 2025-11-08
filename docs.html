@@ -418,6 +418,7 @@
         <h2>Features</h2>
         <ul>
           <li>44 beautiful preset gradients with smooth animations</li>
+          <li><span class="badge badge-new">v2.0</span> Advanced gradient controls with domain warping and turbulence</li>
           <li>Custom color API for creating unique gradients</li>
           <li>Simple, declarative API</li>
           <li>Framework agnostic (React, Vue, Svelte, vanilla JS)</li>
@@ -432,8 +433,14 @@
         <h2>Quick Example</h2>
         <pre><code>import FrostedCanvas from 'frosted-canvas';
 
-// Use a preset
+// Use a preset (animated)
 const frost = new FrostedCanvas('#my-div', { preset: 0 });
+
+// Or create a static background
+const staticFrost = new FrostedCanvas('#my-div', { 
+  preset: 0, 
+  static: true 
+});
 
 // Or create custom colors
 frost.setColors({
@@ -463,6 +470,15 @@ frost.setColors({
 // Use a preset gradient
 const frost = new FrostedCanvas('#container', {
   preset: 0  // 0-43 (44 presets total)
+});</code></pre>
+
+        <h2>Static Background</h2>
+        <pre><code>import FrostedCanvas from 'frosted-canvas';
+
+// Generate a static (non-animated) background
+const frost = new FrostedCanvas('#container', {
+  preset: 0,
+  static: true
 });</code></pre>
 
         <h2>Custom Colors</h2>
@@ -566,6 +582,30 @@ frost.setColors({
           <li>Chrome/Edge 90+</li>
           <li>Firefox 88+</li>
           <li>Safari 14+</li>
+        </ul>
+
+        <h2>Static vs Animated Backgrounds</h2>
+        <p>Frosted Canvas supports both animated and static backgrounds:</p>
+        
+        <h3>Animated (Default)</h3>
+        <pre><code>const frost = new FrostedCanvas('#container', { preset: 0 });</code></pre>
+        <ul>
+          <li>Smooth, continuous animation</li>
+          <li>Dynamic and eye-catching</li>
+          <li>Best for hero sections and interactive elements</li>
+        </ul>
+
+        <h3>Static</h3>
+        <pre><code>const frost = new FrostedCanvas('#container', { 
+  preset: 0, 
+  static: true 
+});</code></pre>
+        <ul>
+          <li>No animation loop - only re-renders when needed</li>
+          <li>Better performance and battery life</li>
+          <li>Perfect for cards, backgrounds, and print designs</li>
+          <li>Automatically re-renders when you call setColors(), setConfig(), or setPreset()</li>
+          <li>Also re-renders on container resize (if autoResize is enabled)</li>
         </ul>
       `,
 
@@ -698,8 +738,40 @@ frost.setColors({
   vignetteStrength: 3.0   // 0-3.0: Edge darkening
 });</code></pre>
 
+        <h2>Advanced Gradient Controls (v2.0+)</h2>
+        <p>Version 2.0 introduces powerful new controls for creating more organic and dynamic gradients:</p>
+        
+        <h3>Domain Warping</h3>
+        <p><strong>domainWarpStrength</strong> (0-0.5): Warps the coordinate space using layered noise for organic, flowing distortions.</p>
+        <pre><code>frost.setConfig({ domainWarpStrength: 0.25 }); // Moderate organic flow</code></pre>
+        
+        <h3>Turbulence</h3>
+        <p><strong>turbulence</strong> (0-1.0): Adds fractal Brownian motion (FBM) with 5 octaves of noise for additional complexity.</p>
+        <pre><code>frost.setConfig({ turbulence: 0.5 }); // Add fractal detail</code></pre>
+        
+        <h3>Gradient Rotation</h3>
+        <p><strong>gradientAngle</strong> (0-6.28): Rotates the gradient direction in radians (0° to 360°).</p>
+        <pre><code>frost.setConfig({ gradientAngle: Math.PI / 4 }); // 45 degree rotation</code></pre>
+        
+        <h3>Color Distribution</h3>
+        <p><strong>colorSpread</strong> (0.1-3.0): Controls how spread out colors are across the gradient.</p>
+        <pre><code>frost.setConfig({ colorSpread: 1.5 }); // Wider color distribution</code></pre>
+        
+        <h3>Flow Animation</h3>
+        <p><strong>flowSpeed</strong> (0-1.0): Independent animation speed for the domain warping flow.</p>
+        <pre><code>frost.setConfig({ flowSpeed: 0.6 }); // Faster flowing motion</code></pre>
+        
+        <h3>Example: Maximum Organic Effect</h3>
+        <pre><code>frost.setConfig({
+  domainWarpStrength: 0.4,
+  turbulence: 0.8,
+  flowSpeed: 0.5,
+  colorSpread: 2.0,
+  gradientAngle: Math.PI / 6
+});</code></pre>
+
         <h2>Interactive Tool</h2>
-        <p>Try the <a href="color-customizer.html" target="_blank">Color Customizer</a> to create and test custom gradients visually!</p>
+        <p>Try the <a href="color-customizer.html" target="_blank">Color Customizer</a> to create and test custom gradients visually with all v2.0 controls!</p>
       `,
 
         'usage-examples': `
@@ -803,6 +875,24 @@ frost.setConfig({
   import FrostedCanvas from 'frosted-canvas';
   window.frost = new FrostedCanvas('#bg', { preset: 0 });
 &lt;/script&gt;</code></pre>
+
+        <h2>7. Static Background</h2>
+        <pre><code>import FrostedCanvas from 'frosted-canvas';
+
+// Perfect for performance-sensitive scenarios or when animation isn't needed
+const frost = new FrostedCanvas('#hero-bg', {
+  preset: 3,
+  static: true  // No animation loop - better performance
+});
+
+// Static backgrounds still support dynamic updates
+// The canvas will re-render automatically when you change settings
+frost.setColors({
+  paletteA: [0.9, 0.2, 0.5],
+  paletteC: [1.0, 0.8, 0.3]
+});
+
+frost.setPreset(5);  // Changes are immediately visible</code></pre>
       `,
 
         'cdn-usage': `
@@ -976,6 +1066,12 @@ frost.setConfig({
             <td>true</td>
             <td>Auto-resize on container changes</td>
           </tr>
+          <tr>
+            <td><code>static</code></td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Generate static (non-animated) background</td>
+          </tr>
         </table>
 
         <h2>Methods</h2>
@@ -994,13 +1090,21 @@ frost.setConfig({
 });</code></pre>
 
         <h3>setConfig(config)</h3>
-        <p>Adjust animation and effects.</p>
+        <p>Adjust animation, effects, and gradient controls (v2.0+).</p>
         <pre><code>frost.setConfig({
+  // Animation & Noise
   noiseScale: 0.3,
   noiseStrength: 0.35,
   animationSpeed: 0.5,
   grainIntensity: 0.03,
-  vignetteStrength: 3.0
+  vignetteStrength: 3.0,
+  
+  // Advanced Gradient Controls (v2.0+)
+  domainWarpStrength: 0.15,  // 0-0.5: Organic warping
+  turbulence: 0.2,            // 0-1.0: Fractal noise
+  gradientAngle: 0.0,         // 0-6.28: Rotation (radians)
+  colorSpread: 1.0,           // 0.1-3.0: Color distribution
+  flowSpeed: 0.3              // 0-1.0: Flow animation speed
 });</code></pre>
 
         <h3>getColors()</h3>
@@ -1044,7 +1148,7 @@ frost.setConfig({
         </table>
 
         <h2>All 44 Presets</h2>
-        <p>Molten Peach, Paper Koi, Sunset Bloom, Aurora Glow, Deep Ocean, Slate Grain, Peach Mirage, Crimson Dusk, Watermelon, Electric Indigo, Coral Reef, Lemon Zest, Midnight Velvet, Forest Mist, Solar Flare, Arctic Dawn, Vintage Sepia, Lavender Haze, Moss Grove, Copper Sunset, Candy Cloud, Meteor Storm, Tropical Night, Dusty Rose, Slate Storm, Glacial Drift, Amber Glow, Neon Canyon, Petrol Dream, Saffron Mist, Cosmic Bloom, Porcelain Dawn, Obsidian Fade, Rose Quartz, Velvet Plum, Horizon Teal, Dusty Denim, Brass Ember, Iris Bloom, Celadon Whisper, Starling Night, Polar Mint, Silent Harbor.</p>
+        <p>Molten Peach, Paper Koi, Sunset Bloom, Aurora Glow, Deep Ocean, Slate Grain, Peach Mirage, Crimson Dusk, Watermelon, Electric Indigo, Coral Reef, Lemon Zest, Midnight Velvet, Forest Mist, Solar Flare, Arctic Dawn, Vintage Sepia, Lavender Haze, Moss Grove, Copper Sunset, Candy Cloud, Meteor Storm, Tropical Night, Dusty Rose, Slate Storm, Glacial Drift, Amber Glow, Neon Canyon, Petrol Dream, Saffron Mist, Cosmic Bloom, Porcelain Dawn, Obsidian Fade, Rose Quartz, Velvet Plum, Horizon Teal, Dusty Denim, Brass Ember, Iris Bloom, Celadon Whisper, Starling Night, Polar Mint, Silent Harbor, Mystic Flow.</p>
 
         <h2>Usage</h2>
         <pre><code>// Use a specific preset (0-43)
